@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "8080", "/Users/kpm/Documents/Projets/dec_light"],
+      "port": 8080
+    }
+  ]
+}

@@ -95,12 +95,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Scroll Reveal ──────────────────────────────────
   const revealElements = document.querySelectorAll(
-    '.service-card, .testimonial-card, .about__inner, .faq__item, .trust-bar__item'
+    '.service-card, .testimonial-card, .about__inner, .faq__item, .trust-bar__item, .section-header, .contact__inner, .service-areas__columns'
   );
+
+  const staggerSelectors = ['.service-card', '.testimonial-card', '.faq__item', '.trust-bar__item'];
 
   if (revealElements.length && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
     revealElements.forEach(el => {
       el.classList.add('reveal');
+      if (staggerSelectors.some(s => el.matches(s))) {
+        el.classList.add('reveal-stagger');
+      }
     });
 
     const observer = new IntersectionObserver((entries) => {
@@ -110,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
     revealElements.forEach(el => observer.observe(el));
 
@@ -118,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
       revealElements.forEach(el => {
         if (!el.classList.contains('is-visible')) el.classList.add('is-visible');
       });
-    }, 4000);
+    }, 5000);
   }
 
   // ── Loi 25 — Cookie Consent ───────────────────────

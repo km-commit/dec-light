@@ -66,7 +66,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .section-title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 800;
   line-height: 1.2;
   margin-bottom: 0.75rem;
@@ -148,27 +148,39 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .btn--lg { padding: 1rem 2rem; font-size: 1.125rem; }
 .btn--full { width: 100%; }
 
-/* ── URGENCY BAR ──────────────────────────────────── */
+/* ── URGENCY BAR (TICKER) ────────────────────────── */
 .urgency-bar {
   background: var(--accent);
   color: #FFFFFF;
-  padding: 0.625rem 1rem;
-  font-size: 1rem;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
   font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-.urgency-bar__inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
+.urgency-bar__ticker {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.urgency-bar__track {
+  display: inline-flex;
+  animation: ticker 30s linear infinite;
+}
+
+.urgency-bar__item {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.625rem;
+  gap: 0.375rem;
+  padding: 0 2.5rem;
+  flex-shrink: 0;
 }
 
 .urgency-bar__pulse {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: #FFFFFF;
   border-radius: 50%;
   animation: pulse 2s ease-in-out infinite;
@@ -180,7 +192,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   50% { opacity: 0.5; transform: scale(1.3); }
 }
 
-.urgency-bar p { margin: 0; text-align: center; }
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 .urgency-bar a { font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 .urgency-bar a:hover { opacity: 0.85; }
 
@@ -212,17 +228,20 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 .nav__toggle { order: 2; }
 
-.nav__phone {
+.nav__phone-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.375rem;
-  font-size: 1rem;
-  font-weight: 700;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
   color: var(--accent);
-  transition: opacity 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
-.nav__phone span { display: none; }
-.nav__phone:hover { opacity: 0.8; }
+.nav__phone-btn span { display: none; }
+.nav__phone-btn:hover { background: var(--accent); color: #FFFFFF; }
 
 .nav__logo {
   display: flex;
@@ -322,26 +341,26 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   overflow: hidden;
 }
 
-.hero__inner { padding: 2.5rem 0 2rem; }
+.hero__inner { padding-top: 2rem; padding-bottom: 1.5rem; }
 
 .hero__badge {
   display: inline-block;
-  font-size: 1rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--accent);
   border: 1px solid var(--accent);
-  padding: 0.375rem 0.75rem;
+  padding: 0.3rem 0.625rem;
   border-radius: 100px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .hero__title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 800;
-  line-height: 1.08;
-  margin-bottom: 1rem;
+  line-height: 1.1;
+  margin-bottom: 0.75rem;
 }
 
 .hero__title-accent {
@@ -350,18 +369,18 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .hero__text {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   color: var(--text-muted-dark);
   max-width: 440px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   line-height: 1.6;
 }
 
 .hero__actions {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
+  gap: 0.625rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Hero truck image box */
@@ -432,16 +451,16 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 .trust-bar__item strong {
   display: block;
-  font-size: 1.75rem;
+  font-size: 1.375rem;
   font-weight: 800;
   line-height: 1.1;
   color: var(--accent);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.125rem;
 }
 
 .trust-bar__item div span {
   display: block;
-  font-size: 1rem;
+  font-size: 0.8125rem;
   color: var(--text-muted-dark);
   line-height: 1.4;
   letter-spacing: 0.02em;
@@ -449,7 +468,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* ── SERVICES ─────────────────────────────────────── */
 .services {
-  padding: 3.5rem 0;
+  padding: 2.5rem 0;
   background: var(--bg);
 }
 
@@ -462,7 +481,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .service-card {
   background: var(--bg-alt);
   border-radius: var(--radius-lg);
-  padding: 1.5rem 1.25rem;
+  padding: 1.25rem 1rem;
   border: 1px solid var(--border);
 }
 
@@ -562,7 +581,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 /* ── CTA BAND ─────────────────────────────────────── */
 .cta-band {
   background: var(--accent);
-  padding: 2.5rem 0;
+  padding: 2rem 0;
 }
 
 .cta-band__inner {
@@ -574,7 +593,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .cta-band__title {
-  font-size: 1.75rem;
+  font-size: 1.375rem;
   font-weight: 800;
   color: #FFFFFF;
   line-height: 1.2;
@@ -588,7 +607,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* ── ABOUT ────────────────────────────────────────── */
 .about {
-  padding: 3.5rem 0;
+  padding: 2.5rem 0;
   background: var(--bg-alt);
 }
 
@@ -692,21 +711,34 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* ── TESTIMONIALS ─────────────────────────────────── */
 .testimonials {
-  padding: 3.5rem 0;
+  padding: 2.5rem 0;
   background: var(--bg-dark);
   color: var(--text-on-dark);
 }
 
+.testimonials__scroller {
+  overflow: hidden;
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
+}
+
 .testimonials__track {
   display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
   gap: 1rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 1rem;
-  scrollbar-width: none;
+  animation: reviews-scroll 50s linear infinite;
 }
-.testimonials__track::-webkit-scrollbar { display: none; }
+
+.testimonials__scroller:hover .testimonials__track {
+  animation-play-state: paused;
+}
+
+@keyframes reviews-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
 
 .testimonial-card {
   background: #FFFFFF;
@@ -824,7 +856,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* ── SERVICE AREAS ────────────────────────────────── */
 .service-areas {
-  padding: 3.5rem 0;
+  padding: 2.5rem 0;
   background: var(--bg-dark);
   color: var(--text-on-dark);
 }
@@ -886,7 +918,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* ── CONTACT ──────────────────────────────────────── */
 .contact {
-  padding: 3.5rem 0;
+  padding: 2.5rem 0;
   background: var(--accent);
   color: #FFFFFF;
 }
@@ -1026,7 +1058,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* ── FAQ ──────────────────────────────────────────── */
 .faq {
-  padding: 3.5rem 0;
+  padding: 2.5rem 0;
   background: var(--bg-alt);
 }
 
@@ -1220,8 +1252,12 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .footer__bottom p {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--text-muted-dark);
+}
+
+.footer__bottom {
+  padding-bottom: 5rem;
 }
 
 .footer__legal {
@@ -1311,6 +1347,20 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 @media (min-width: 640px) {
   .container { padding: 0 3rem; }
 
+  .hero__badge { font-size: 0.875rem; }
+  .hero__title { font-size: 2.5rem; }
+  .hero__text { font-size: 1rem; }
+  .section-title { font-size: 1.75rem; }
+  .cta-band__title { font-size: 1.75rem; }
+  .trust-bar__item strong { font-size: 1.75rem; }
+  .trust-bar__item div span { font-size: 0.875rem; }
+
+  .services, .about, .testimonials, .service-areas, .contact, .faq {
+    padding: 3.5rem 0;
+  }
+
+  .footer__bottom { padding-bottom: 1.25rem; }
+
   .service-areas__columns { grid-template-columns: repeat(4, 1fr); }
 
   .hero__actions { flex-direction: row; }
@@ -1340,12 +1390,22 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
    ═══════════════════════════════════════════════════ */
 @media (min-width: 1024px) {
   .section-title { font-size: 2.5rem; }
-  .services, .about, .testimonials, .why-choose, .service-areas, .contact, .faq {
+  .hero__badge { font-size: 1rem; }
+  .services, .about, .why-choose, .contact, .faq {
     padding: 5rem 0;
   }
+  .testimonials, .service-areas {
+    padding: 6rem 0;
+  }
+  .service-card { padding: 1.5rem 1.25rem; }
 
   .nav__toggle { display: none; }
-  .nav__phone span { display: inline; }
+  .nav__phone-btn {
+    width: auto;
+    border-radius: var(--radius);
+    padding: 0.5rem 1rem;
+  }
+  .nav__phone-btn span { display: inline; }
 
   .nav__actions { order: 0; }
   .nav__toggle { order: 0; }
@@ -1373,7 +1433,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     grid-template-columns: 1fr 1fr;
     align-items: center;
     gap: 3rem;
-    padding: 4rem 0 3rem;
+    padding-top: 4rem;
+    padding-bottom: 3rem;
   }
 
   .hero__title { font-size: 3.5rem; }

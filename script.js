@@ -93,6 +93,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ── Testimonials Drag-to-Scroll ─────────────────────
+  const scroller = document.querySelector('.testimonials__scroller');
+  if (scroller) {
+    const track = scroller.querySelector('.testimonials__track');
+    let isDown = false, startX, scrollLeft;
+
+    scroller.addEventListener('mousedown', (e) => {
+      isDown = true;
+      scroller.classList.add('is-dragging');
+      startX = e.pageX - scroller.offsetLeft;
+      scrollLeft = scroller.scrollLeft;
+    });
+    scroller.addEventListener('mouseleave', () => { isDown = false; scroller.classList.remove('is-dragging'); });
+    scroller.addEventListener('mouseup', () => { isDown = false; scroller.classList.remove('is-dragging'); });
+    scroller.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - scroller.offsetLeft;
+      scroller.scrollLeft = scrollLeft - (x - startX) * 1.5;
+    });
+
+    let touchStartX, touchScrollLeft;
+    scroller.addEventListener('touchstart', (e) => {
+      if (track) track.style.animationPlayState = 'paused';
+      touchStartX = e.touches[0].pageX;
+      touchScrollLeft = scroller.scrollLeft;
+    }, { passive: true });
+    scroller.addEventListener('touchmove', (e) => {
+      const x = e.touches[0].pageX;
+      scroller.scrollLeft = touchScrollLeft - (x - touchStartX);
+    }, { passive: true });
+    scroller.addEventListener('touchend', () => {
+      if (track) track.style.animationPlayState = '';
+    });
+  }
+
   // ── Scroll Reveal ──────────────────────────────────
   const revealElements = document.querySelectorAll(
     '.service-card, .testimonial-card, .about__inner, .faq__item, .trust-bar__item, .section-header, .contact__inner, .service-areas__columns'

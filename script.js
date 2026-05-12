@@ -1,19 +1,15 @@
-/* ═══════════════════════════════════════════════════
-   DÉCARIE PLOMBERIE — Script v3
-   ═══════════════════════════════════════════════════ */
-
 document.addEventListener('DOMContentLoaded', () => {
-
-  // ── Mobile Nav ─────────────────────────────────────
   const toggle = document.getElementById('nav-toggle');
   const menu = document.getElementById('nav-menu');
   const overlay = document.getElementById('nav-overlay');
+  const nav = document.getElementById('nav');
+  const mobileCta = document.getElementById('mobile-cta');
 
   function closeMenu() {
     menu.classList.remove('active');
     toggle.classList.remove('active');
     toggle.setAttribute('aria-expanded', 'false');
-    if (overlay) overlay.classList.remove('active');
+    overlay?.classList.remove('active');
     document.body.style.overflow = '';
   }
 
@@ -21,33 +17,27 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.addEventListener('click', () => {
       const isOpen = menu.classList.toggle('active');
       toggle.classList.toggle('active');
-      toggle.setAttribute('aria-expanded', isOpen);
-      if (overlay) overlay.classList.toggle('active', isOpen);
+      toggle.setAttribute('aria-expanded', String(isOpen));
+      overlay?.classList.toggle('active', isOpen);
       document.body.style.overflow = isOpen ? 'hidden' : '';
     });
 
-    menu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', closeMenu);
+    menu.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+    overlay?.addEventListener('click', closeMenu);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.classList.contains('active')) closeMenu();
     });
-
-    if (overlay) {
-      overlay.addEventListener('click', closeMenu);
-    }
   }
-
-  // ── Nav Scroll Shadow ──────────────────────────────
-  const nav = document.getElementById('nav');
-  const mobileCta = document.getElementById('mobile-cta');
 
   if (nav) {
     window.addEventListener('scroll', () => {
       const y = window.scrollY;
       nav.classList.toggle('nav--scrolled', y > 10);
-      if (mobileCta) mobileCta.classList.toggle('is-visible', y > 600);
+      mobileCta?.classList.toggle('is-visible', y > 600);
     }, { passive: true });
   }
 
-  // ── Smooth Scroll ──────────────────────────────────
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', (e) => {
       const href = link.getAttribute('href');
@@ -56,22 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
       if (target) {
         e.preventDefault();
         const offset = nav ? nav.offsetHeight : 0;
-        const top = target.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top, behavior: 'smooth' });
+        window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - offset, behavior: 'smooth' });
       }
     });
   });
 
-  // ── FAQ Accordion (accessible) ─────────────────────
   document.querySelectorAll('.faq__q').forEach(btn => {
     btn.addEventListener('click', () => {
       const item = btn.closest('.faq__item');
       const isOpen = item.classList.toggle('is-open');
-      btn.setAttribute('aria-expanded', isOpen);
+      btn.setAttribute('aria-expanded', String(isOpen));
     });
   });
 
-  // ── Contact Form (Formspree with fallback) ─────────
   const form = document.getElementById('contact-form');
   if (form) {
     form.addEventListener('submit', (e) => {
@@ -79,12 +66,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!action || action.includes('YOUR_FORM_ID')) {
         e.preventDefault();
         const btn = form.querySelector('button[type="submit"]');
-        const originalText = btn.textContent;
-        btn.textContent = 'Demande envoyée ✓';
+        const original = btn.textContent;
+        btn.textContent = document.documentElement.lang.startsWith('en') ? 'Request sent' : 'Demande envoyée';
         btn.disabled = true;
         btn.style.opacity = '0.7';
         setTimeout(() => {
-          btn.textContent = originalText;
+          btn.textContent = original;
           btn.disabled = false;
           btn.style.opacity = '1';
           form.reset();
@@ -93,18 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ── Testimonials Drag-to-Scroll ─────────────────────
   const scroller = document.querySelector('.testimonials__scroller');
   if (scroller) {
     const track = scroller.querySelector('.testimonials__track');
-    let isDragging = false, startX, currentTranslate = 0, dragOffset = 0;
-    let resumeTimer;
+    let isDragging = false, startX, currentTranslate = 0, dragOffset = 0, resumeTimer;
     const halfWidth = () => track.scrollWidth / 2;
 
     function getAnimTranslate() {
-      const st = getComputedStyle(track);
-      const matrix = new DOMMatrix(st.transform);
-      return matrix.m41;
+      return new DOMMatrix(getComputedStyle(track).transform).m41;
     }
 
     function stopAnim() {
@@ -119,11 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const half = halfWidth();
         let pos = currentTranslate % half;
         if (pos > 0) pos -= half;
-        const fraction = Math.abs(pos) / half;
-        const dur = 50 * (1 - fraction);
         track.style.transform = '';
-        track.style.animation = `reviews-scroll ${dur}s linear infinite`;
-        track.style.animationDelay = '0s';
+        track.style.animation = `reviews-scroll ${50 * (1 - Math.abs(pos) / half)}s linear infinite`;
       }, 2000);
     }
 
@@ -156,25 +136,45 @@ document.addEventListener('DOMContentLoaded', () => {
     scroller.addEventListener('mousedown', (e) => { e.preventDefault(); onStart(e.pageX); });
     window.addEventListener('mousemove', (e) => onMove(e.pageX));
     window.addEventListener('mouseup', onEnd);
-
     scroller.addEventListener('touchstart', (e) => onStart(e.touches[0].pageX), { passive: true });
     scroller.addEventListener('touchmove', (e) => onMove(e.touches[0].pageX), { passive: true });
     scroller.addEventListener('touchend', onEnd);
+
+    const prevBtn = document.querySelector('.testimonials__btn--prev');
+    const nextBtn = document.querySelector('.testimonials__btn--next');
+    const cardWidth = () => {
+      const card = track.querySelector('.testimonial-card');
+      return card ? card.offsetWidth + 16 : 320;
+    };
+
+    function scrollByCards(dir) {
+      stopAnim();
+      const shift = cardWidth() * dir;
+      currentTranslate += shift;
+      const half = halfWidth();
+      if (currentTranslate > 0) currentTranslate -= half;
+      if (currentTranslate < -half) currentTranslate += half;
+      track.style.transition = 'transform 0.4s ease';
+      track.style.transform = `translateX(${currentTranslate}px)`;
+      track.addEventListener('transitionend', () => {
+        track.style.transition = '';
+        resumeAnim();
+      }, { once: true });
+    }
+
+    prevBtn?.addEventListener('click', () => scrollByCards(1));
+    nextBtn?.addEventListener('click', () => scrollByCards(-1));
   }
 
-  // ── Scroll Reveal ──────────────────────────────────
-  const revealElements = document.querySelectorAll(
+  const revealEls = document.querySelectorAll(
     '.service-card, .testimonial-card, .about__inner, .faq__item, .trust-bar__item, .section-header, .contact__inner, .service-areas__columns'
   );
-
   const staggerSelectors = ['.service-card', '.testimonial-card', '.faq__item', '.trust-bar__item'];
 
-  if (revealElements.length && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-    revealElements.forEach(el => {
+  if (revealEls.length && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    revealEls.forEach(el => {
       el.classList.add('reveal');
-      if (staggerSelectors.some(s => el.matches(s))) {
-        el.classList.add('reveal-stagger');
-      }
+      if (staggerSelectors.some(s => el.matches(s))) el.classList.add('reveal-stagger');
     });
 
     const observer = new IntersectionObserver((entries) => {
@@ -186,30 +186,22 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-    revealElements.forEach(el => observer.observe(el));
-
-    setTimeout(() => {
-      revealElements.forEach(el => {
-        if (!el.classList.contains('is-visible')) el.classList.add('is-visible');
-      });
-    }, 5000);
+    revealEls.forEach(el => observer.observe(el));
+    setTimeout(() => revealEls.forEach(el => el.classList.add('is-visible')), 5000);
   }
 
-  // ── Loi 25 — Cookie Consent ───────────────────────
   const consentKey = 'decarie_consent';
   if (!localStorage.getItem(consentKey)) {
     document.body.classList.add('consent-pending');
   }
 
-  const acceptBtn = document.getElementById('consent-accept');
-  const essentialBtn = document.getElementById('consent-essential');
-
-  function closeConsent(level) {
-    localStorage.setItem(consentKey, level);
+  document.getElementById('consent-accept')?.addEventListener('click', () => {
+    localStorage.setItem(consentKey, 'all');
     document.body.classList.remove('consent-pending');
-  }
+  });
 
-  if (acceptBtn) acceptBtn.addEventListener('click', () => closeConsent('all'));
-  if (essentialBtn) essentialBtn.addEventListener('click', () => closeConsent('essential'));
-
+  document.getElementById('consent-essential')?.addEventListener('click', () => {
+    localStorage.setItem(consentKey, 'essential');
+    document.body.classList.remove('consent-pending');
+  });
 });

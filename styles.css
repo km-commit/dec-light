@@ -717,18 +717,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .testimonials__scroller {
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
   width: 100%;
   mask-image: linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
   cursor: grab;
 }
-.testimonials__scroller::-webkit-scrollbar { display: none; }
 .testimonials__scroller.is-dragging { cursor: grabbing; }
-.testimonials__scroller.is-dragging .testimonials__track { animation-play-state: paused; }
 
 .testimonials__track {
   display: flex;

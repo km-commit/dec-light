@@ -97,36 +97,69 @@ document.addEventListener('DOMContentLoaded', () => {
   const scroller = document.querySelector('.testimonials__scroller');
   if (scroller) {
     const track = scroller.querySelector('.testimonials__track');
-    let isDown = false, startX, scrollLeft;
+    let isDragging = false, startX, currentTranslate = 0, dragOffset = 0;
+    let resumeTimer;
+    const halfWidth = () => track.scrollWidth / 2;
 
-    scroller.addEventListener('mousedown', (e) => {
-      isDown = true;
+    function getAnimTranslate() {
+      const st = getComputedStyle(track);
+      const matrix = new DOMMatrix(st.transform);
+      return matrix.m41;
+    }
+
+    function stopAnim() {
+      clearTimeout(resumeTimer);
+      currentTranslate = getAnimTranslate();
+      track.style.animation = 'none';
+      track.style.transform = `translateX(${currentTranslate}px)`;
+    }
+
+    function resumeAnim() {
+      resumeTimer = setTimeout(() => {
+        const half = halfWidth();
+        let pos = currentTranslate % half;
+        if (pos > 0) pos -= half;
+        const fraction = Math.abs(pos) / half;
+        const dur = 50 * (1 - fraction);
+        track.style.transform = '';
+        track.style.animation = `reviews-scroll ${dur}s linear infinite`;
+        track.style.animationDelay = '0s';
+      }, 2000);
+    }
+
+    function onStart(x) {
+      isDragging = true;
+      startX = x;
+      stopAnim();
+      dragOffset = 0;
       scroller.classList.add('is-dragging');
-      startX = e.pageX - scroller.offsetLeft;
-      scrollLeft = scroller.scrollLeft;
-    });
-    scroller.addEventListener('mouseleave', () => { isDown = false; scroller.classList.remove('is-dragging'); });
-    scroller.addEventListener('mouseup', () => { isDown = false; scroller.classList.remove('is-dragging'); });
-    scroller.addEventListener('mousemove', (e) => {
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - scroller.offsetLeft;
-      scroller.scrollLeft = scrollLeft - (x - startX) * 1.5;
-    });
+    }
 
-    let touchStartX, touchScrollLeft;
-    scroller.addEventListener('touchstart', (e) => {
-      if (track) track.style.animationPlayState = 'paused';
-      touchStartX = e.touches[0].pageX;
-      touchScrollLeft = scroller.scrollLeft;
-    }, { passive: true });
-    scroller.addEventListener('touchmove', (e) => {
-      const x = e.touches[0].pageX;
-      scroller.scrollLeft = touchScrollLeft - (x - touchStartX);
-    }, { passive: true });
-    scroller.addEventListener('touchend', () => {
-      if (track) track.style.animationPlayState = '';
-    });
+    function onMove(x) {
+      if (!isDragging) return;
+      dragOffset = x - startX;
+      track.style.transform = `translateX(${currentTranslate + dragOffset}px)`;
+    }
+
+    function onEnd() {
+      if (!isDragging) return;
+      isDragging = false;
+      scroller.classList.remove('is-dragging');
+      currentTranslate += dragOffset;
+      const half = halfWidth();
+      if (currentTranslate > 0) currentTranslate -= half;
+      if (currentTranslate < -half) currentTranslate += half;
+      track.style.transform = `translateX(${currentTranslate}px)`;
+      resumeAnim();
+    }
+
+    scroller.addEventListener('mousedown', (e) => { e.preventDefault(); onStart(e.pageX); });
+    window.addEventListener('mousemove', (e) => onMove(e.pageX));
+    window.addEventListener('mouseup', onEnd);
+
+    scroller.addEventListener('touchstart', (e) => onStart(e.touches[0].pageX), { passive: true });
+    scroller.addEventListener('touchmove', (e) => onMove(e.touches[0].pageX), { passive: true });
+    scroller.addEventListener('touchend', onEnd);
   }
 
   // ── Scroll Reveal ──────────────────────────────────
